@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Light Simulation</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .traffic-row {
+            display: flex;
+            margin: 30px;
+        }
+
+        .traffic-light {
+            width: 100px;
+            height: 300px;
+            background-color: black;
+            margin: 30px;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .light {
+            width: 60px;
+            height: 60px;
+            background-color: grey;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .red {
+            background-color: red;
+        }
+
+        .yellow {
+            background-color: yellow;
+            color: black;
+        }
+
+        .green {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="hi"></h1>
+    <h1 id="hi"></h1>
+    <div  class="traffic-row">
+        <div class="traffic-light" id="trafficLight1">
+            <div class="light red" id="red1"></div>
+            <div class="light" id="yellow1"></div>
+            <div class="light" id="green1"></div>
+        </div>
+        
+        <div style="margin-left: 17rem;" class="traffic-light" id="trafficLight2">
+            <div class="light red" id="red2"></div>
+            <div class="light" id="yellow2"></div>
+            <div class="light" id="green2"></div>
+        </div>
+        
+    </div>
+    
+    <div class="traffic-row">
+        <div style="margin-top: 10rem;" class="traffic-light" id="trafficLight4">
+            <div class="light red" id="red4"></div>
+            <div class="light" id="yellow4"></div>
+            <div class="light" id="green4"></div>
+        </div>
+        
+        <div  style="margin-left: 17rem;margin-top: 10rem;"  class="traffic-light" id="trafficLight3">
+            <div class="light red" id="red3"></div>
+            <div class="light" id="yellow3"></div>
+            <div class="light" id="green3"></div>
+        </div>
+    </div>
+    <script>
+        // Initialize the traffic lights
+        const trafficLights = [
+            {
+                red: document.getElementById('red1'),
+                yellow: document.getElementById('yellow1'),
+                green: document.getElementById('green1')
+            },
+            {
+                red: document.getElementById('red2'),
+                yellow: document.getElementById('yellow2'),
+                green: document.getElementById('green2')
+            },
+            {
+                red: document.getElementById('red3'),
+                yellow: document.getElementById('yellow3'),
+                green: document.getElementById('green3')
+            },
+            {
+                red: document.getElementById('red4'),
+                yellow: document.getElementById('yellow4'),
+                green: document.getElementById('green4')
+            }
+        ];
+
+        let currentLightIndex = 0;
+        let gg = 0;  // Placeholder variable initialization
+
+        function updateTrafficLights(time_green) {
+            trafficLights.forEach((light, index) => {
+                light.red.classList.add('red');
+                light.yellow.classList.remove('yellow');
+                light.green.classList.remove('green');
+                if (index !== currentLightIndex) {
+                    light.red.innerText = '';
+                    light.yellow.innerText = '';
+                    light.green.innerText = '';
+                }
+            });
+
+            let greenTime = time_green + 10;
+            const currentLight = trafficLights[currentLightIndex];
+            currentLight.red.classList.remove('red');
+            currentLight.red.innerText = '';
+            currentLight.green.classList.add('green');
+            currentLight.green.innerText = greenTime;
+
+            const greenInterval = setInterval(() => {
+                greenTime--;
+                currentLight.green.innerText = greenTime;
+                if (greenTime <= 0) {
+                    clearInterval(greenInterval);
+                    currentLight.green.classList.remove('green');
+                    currentLight.green.innerText = '';
+                    currentLight.yellow.classList.add('yellow');
+
+                    let yellowTime = 5;
+                    currentLight.yellow.innerText = yellowTime;
+
+                    const yellowInterval = setInterval(() => {
+                        yellowTime--;
+                        currentLight.yellow.innerText = yellowTime;
+                        if (yellowTime <= 0) {
+                            clearInterval(yellowInterval);
+                            currentLight.yellow.classList.remove('yellow');
+                            currentLight.yellow.innerText = '';
+                            currentLightIndex = (currentLightIndex + 1) % trafficLights.length;
+                            updateTrafficLights(gg); // Use gg for next green time
+                        }
+                    }, 1000);
+                }
+            }, 1000);
+
+            fetch('http://127.0.0.1:5000/new-api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                gg = data; // Assign data to gg
+            })
+            .catch(error => console.error("error", error));
+
+            setTimeout(() => {
+                fetch('http://127.0.0.1:5000/green-time', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(gg)  // Send gg to server
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // document.getElementById("hi").innerText = data.number;
+                    gg = data.number; // Update gg with new green time
+                })
+                .catch(error => console.error("error", error));
+            }, 1000);
+        }
+
+        updateTrafficLights(3);  // Start simulation with initial green time
+    </script>
+</body>
+</html>
