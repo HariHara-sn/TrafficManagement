@@ -13,7 +13,9 @@ out_layer_indices = net.getUnconnectedOutLayers().flatten()  # Flatten to handle
 output_layers = [layer_names[i - 1] for i in out_layer_indices]  # Adjust index for Python's 0-based indexing
 
 # Open video capture
-cap = cv2.VideoCapture(r'D:\traffic_simulation\traffic_vedio.mp4')
+cap = cv2.VideoCapture(r'D:\traffic_simulation\traffic_vedio.mp4') #using video
+
+# cap = cv2.imread(r'D:\traffic_simulation\traffic_2.png') # Using image 
 
 # Set the scale for resizing (adjust as needed)
 resize_scale = 0.3  # This reduces the frame size to 30%. Adjust this value for more or less zoom out.

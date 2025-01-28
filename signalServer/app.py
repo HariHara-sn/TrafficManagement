@@ -8,19 +8,30 @@ def main():
     return render_template("index.html")
 
 # Simulating the VehicleInfo module and function
-from traffic_img import VehicleInfo
-class VehicleInfo:
-    @staticmethod
-    def Vehfun():
-        # Simulate vehicle detection (replace with actual YOLO detection logic)
-        return {"10": {"car": 2, "bike": 1}, "15": {"car": 1, "bus": 1}, "20": {"truck": 1}}
+# from traffic_img import VehicleInfo
+# class VehicleInfo:
+#     @staticmethod
+#     def Vehfun():
+#         # Simulate vehicle detection (replace with actual YOLO detection logic)
+#         return {"10": {"car": 2, "bike": 1}, "15": {"car": 1, "bus": 1}, "20": {"truck": 1}}
+
+from traffic_2 import VehicleInfo_8
+@app.route("/new-api", methods=["POST"])
+
+def v():
+    hari = VehicleInfo_8.Vehfun_2()
+    print("hariii"+hari)
+    return jsonify(hari)
+
+
+
 
 # Endpoint for vehicle detection (simulated)
-@app.route("/new-api", methods=["POST"])
-def yolo():
-    vehi = VehicleInfo.Vehfun()  # Call YOLO-like vehicle detection
-    print(vehi)
-    return jsonify(vehi)
+# @app.route("/new-api", methods=["POST"])
+# def yolo():
+#     vehi = VehicleInfo.Vehfun()  # Call YOLO-like vehicle detection
+#     print(vehi)
+#     return jsonify(vehi)
 
 # Endpoint for calculating the green time
 @app.route("/green-time", methods=['POST'])
